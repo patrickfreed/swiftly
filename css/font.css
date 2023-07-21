@@ -1,0 +1,10 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Hello", "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif;
+    font-size: 18px;
+    line-height: 1.5;
+    font-weight: 300;
+
+    pre, code {
+        font-family: "SF Mono", Menlo, Consolas, Monaco, "Courier New", monospace, serif;
+    }
+}
