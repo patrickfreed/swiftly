@@ -43,6 +43,9 @@ final class ToolchainSelectorTests: SwiftlyTests {
             "5.7-snapshot",
             "5.7-SNAPSHOT",
             "5.7-DEVELOPMENT-SNAPSHOT",
+            "swift-5.7-snapshot",
+            "swift-5.7-SNAPSHOT",
+            "swift-5.7-DEVELOPMENT-SNAPSHOT",
         ]
         try runTest(.snapshot(branch: .release(major: 5, minor: 7), date: nil), parses)
     }
@@ -53,6 +56,10 @@ final class ToolchainSelectorTests: SwiftlyTests {
             "5.7-SNAPSHOT-2023-06-05",
             "5.7-DEVELOPMENT-SNAPSHOT-2023-06-05",
             "5.7-DEVELOPMENT-SNAPSHOT-2023-06-05-a",
+            "swift-5.7-snapshot-2023-06-05",
+            "swift-5.7-SNAPSHOT-2023-06-05",
+            "swift-5.7-DEVELOPMENT-SNAPSHOT-2023-06-05",
+            "swift-5.7-DEVELOPMENT-SNAPSHOT-2023-06-05-a",
         ]
         try runTest(.snapshot(branch: .release(major: 5, minor: 7), date: "2023-06-05"), parses)
     }
