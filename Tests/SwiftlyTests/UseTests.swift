@@ -306,4 +306,24 @@ final class UseTests: SwiftlyTests {
             XCTAssertEqual(yConfig.inUse, toolchain)
         }
     }
+
+    /// Tests that running a use command without an argument prints the currently in-use toolchain.
+    func testPrintInUse() async throws {
+        let toolchains = [
+            Self.newStable,
+            Self.newMainSnapshot,
+            Self.newReleaseSnapshot,
+        ]
+        try await self.withMockedHome(homeName: Self.homeName, toolchains: Set(toolchains)) {
+            for toolchain in toolchains {
+                var use = try self.parseCommand(Use.self, ["use", toolchain.name])
+                try await use.run()
+
+                var useEmpty = try self.parseCommand(Use.self, ["use"])
+                let output = try await useEmpty.runWithMockedIO()
+
+                XCTAssert(output.contains(where: { $0.contains(String(describing: toolchain)) }))
+            }
+        }
+    }
 }

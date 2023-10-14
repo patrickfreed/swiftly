@@ -3,12 +3,16 @@ import SwiftlyCore
 
 internal struct Use: SwiftlyCommand {
     public static var configuration = CommandConfiguration(
-        abstract: "Set the active toolchain."
+        abstract: "Set the active toolchain. If no toolchain is provided, print the currently in-use toolchain, if any."
     )
 
     @Argument(help: ArgumentHelp(
         "The toolchain to use.",
         discussion: """
+
+        If no toolchain is provided, the currently in-use toolchain will be printed, if any:
+
+            $ swiftly use
 
         The string "latest" can be provided to use the most recent stable version release:
 
@@ -32,18 +36,26 @@ internal struct Use: SwiftlyCommand {
         Likewise, the latest snapshot associated with a given development branch can be \
         used by omitting the date:
 
-            $ swiftly install 5.7-snapshot
-            $ swiftly install main-snapshot
+            $ swiftly use 5.7-snapshot
+            $ swiftly use main-snapshot
         """
     ))
-    var toolchain: String
+    var toolchain: String?
 
     internal mutating func run() async throws {
-        let selector = try ToolchainSelector(parsing: self.toolchain)
         var config = try Config.load()
 
+        guard let toolchain = self.toolchain else {
+            if let inUse = config.inUse {
+                SwiftlyCore.print("\(inUse) (in use)")
+            }
+            return
+        }
+
+        let selector = try ToolchainSelector(parsing: toolchain)
+
         guard let toolchain = config.listInstalledToolchains(selector: selector).max() else {
-            SwiftlyCore.print("No installed toolchains match \"\(self.toolchain)\"")
+            SwiftlyCore.print("No installed toolchains match \"\(toolchain)\"")
             return
         }
 
