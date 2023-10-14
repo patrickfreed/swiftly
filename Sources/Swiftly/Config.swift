@@ -23,6 +23,10 @@ public struct Config: Codable, Equatable {
 
         /// The CPU architecture of the platform. If omitted, assumed to be x86_64.
         public let architecture: String?
+
+        public func getArchitecture() -> String {
+            return self.architecture ?? "x86_64"
+        }
     }
 
     public var inUse: ToolchainVersion?

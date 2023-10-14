@@ -33,9 +33,8 @@ public protocol Platform {
     /// This will likely have a default implementation.
     func listAvailableSnapshots(version: String?) async -> [Snapshot]
 
-    /// Update swiftly itself, if a new version has been released.
-    /// This will likely have a default implementation.
-    func selfUpdate() async throws
+    /// Get the name of the release binary for this platform with the given CPU arch.
+    func getExecutableName(forArch: String) -> String
 
     /// Get a path pointing to a unique, temporary file.
     /// This does not need to actually create the file.

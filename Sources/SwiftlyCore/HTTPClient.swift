@@ -139,6 +139,50 @@ public class SwiftlyHTTPClient {
         public let url: String
     }
 
+    public func downloadFile(url: URL, to destination: URL, reportProgress: @escaping (DownloadProgress) -> Void) async throws {
+        let fileHandle = try FileHandle(forWritingTo: destination)
+        defer {
+            try? fileHandle.close()
+        }
+
+        let request = self.makeRequest(url: url.absoluteString)
+        let response = try await self.inner.execute(request, timeout: .seconds(30))
+
+        guard case response.status = HTTPResponseStatus.ok else {
+            throw Error(message: "Received \(response.status) when trying to download \(url)")
+        }
+
+        // Unknown download.swift.org paths redirect to a 404 page which then returns a 200 status.
+        // As a heuristic for if we've hit the 404 page, we check to see if the content is HTML.
+        guard !response.headers["Content-Type"].contains(where: { $0.contains("text/html") }) else {
+            // TODO: handle this better
+            throw SwiftlyHTTPClient.DownloadNotFoundError(url: url.path)
+        }
+
+        // if defined, the content-length headers announces the size of the body
+        let expectedBytes = response.headers.first(name: "content-length").flatMap(Int.init)
+
+        var lastUpdate = Date()
+        var receivedBytes = 0
+        for try await buffer in response.body {
+            receivedBytes += buffer.readableBytes
+
+            try buffer.withUnsafeReadableBytes { bufferPtr in
+                try fileHandle.write(contentsOf: bufferPtr)
+            }
+
+            let now = Date()
+            if lastUpdate.distance(to: now) > 0.25 || receivedBytes == expectedBytes {
+                lastUpdate = now
+                reportProgress(SwiftlyHTTPClient.DownloadProgress(
+                                   receivedBytes: receivedBytes,
+                                   totalBytes: expectedBytes))
+            }
+        }
+
+        try fileHandle.synchronize()
+    }
+
     public func downloadToolchain(
         _ toolchain: ToolchainVersion,
         url: String,

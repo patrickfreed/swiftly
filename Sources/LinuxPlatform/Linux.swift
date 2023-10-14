@@ -131,7 +131,9 @@ public struct Linux: Platform {
         []
     }
 
-    public func selfUpdate() async throws {}
+    public func getExecutableName(forArch: String) -> String {
+        return "swiftly-\(forArch)-unknown-linux-gnu"
+    }
 
     public func currentToolchain() throws -> ToolchainVersion? { nil }
 

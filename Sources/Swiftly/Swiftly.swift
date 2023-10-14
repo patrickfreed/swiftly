@@ -19,6 +19,7 @@ public struct Swiftly: SwiftlyCommand {
             Uninstall.self,
             List.self,
             Update.self,
+            SelfUpdate.self,
         ]
     )
 
