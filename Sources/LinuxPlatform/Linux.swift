@@ -143,8 +143,7 @@ public struct Linux: Platform {
 
     public func verifySignature(httpClient: SwiftlyHTTPClient, archiveDownloadURL: URL, archive: URL) async throws {
         guard (try? self.runProgram("gpg", "--version", quiet: true)) != nil else {
-            SwiftlyCore.print("gpg not installed, skipping signature verification.")
-            return
+            throw Error(message: "gpg not installed, cannot perform signature verification. To set up gpg for toolchain signature validation, follow the instructions at To skip signature validation, specify the --no-verify flag when installing a toolchain.")
         }
 
         let foundKeys = (try? self.runProgram(
